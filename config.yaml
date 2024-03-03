@@ -1,0 +1,37 @@
+mysql:
+  path: 192.168.5.221:41001
+  config: charset=utf8mb4&parseTime=True&loc=Local
+  db-name: devops
+  username: root
+  password: "nancal.123"
+  max-idle-conns: 5
+  max-open-conns: 30
+  conn-max-lifetime: 420
+  log-mode: ""
+  log-zap: false
+  slow-query: 10 #单位毫秒
+  log-level: 4 # Silent:1  Error:2  Warn:3  Info:4 仅4个
+  auth-login-front: http://localhost:3100
+
+
+system:
+  env: local
+  addr: 8080
+  db-type: mysql
+  oss-type: huawei-obs
+  use-multipoint: true
+  iplimit-count: 15000
+  iplimit-time: 3600
+  web-domain: http://leyan-dev.rysaas.cn
+
+
+zap:
+  level: info
+  format: console
+  prefix: '[nancal-ccs]'
+  director: log
+  showLine: true
+  encode-level: LowercaseColorLevelEncoder
+  stacktrace-key: stacktrace
+  log-in-console: true
+

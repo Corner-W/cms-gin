@@ -1,0 +1,162 @@
+definitions:
+  request.Article:
+    properties:
+      content:
+        type: string
+      cover_image_url:
+        type: string
+      created_by:
+        type: string
+      created_on:
+        type: integer
+      deleted_on:
+        type: integer
+      desc:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      modified_by:
+        type: string
+      modified_on:
+        type: integer
+      state:
+        type: integer
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/cms/:filename:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: file name
+        in: path
+        name: filename
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: 删除文件
+      tags:
+      - codeHosts 代码源
+      x-creator: wangdanfeng
+  /api/v1/cms/article:
+    post:
+      parameters:
+      - description: 标签ID
+        in: body
+        name: tag_id
+        required: true
+        schema:
+          type: string
+      - description: 文章标题
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: 文章简述
+        in: body
+        name: desc
+        schema:
+          type: string
+      - description: 封面图片地址
+        in: body
+        name: cover_image_url
+        required: true
+        schema:
+          type: string
+      - description: 文章内容
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      - description: 创建者
+        in: body
+        name: created_by
+        required: true
+        schema:
+          type: integer
+      - description: 状态
+        in: body
+        name: state
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "100":
+          description: 请求错误
+          schema:
+            type: string
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/request.Article'
+        "500":
+          description: 内部错误
+          schema:
+            type: string
+      summary: 创建文章
+      x-creator: wangdanfeng
+  /api/v1/cms/file:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 文件上传
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 操作成功
+          schema:
+            type: string
+      summary: 上传文件
+      tags:
+      - codeHosts 代码源
+      x-creator: wangdanfeng
+  /api/v1/cms/pageview:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 访客标识 ip或者用户名
+        in: body
+        name: visitor
+        required: true
+        schema:
+          type: string
+      - description: 访客行为，点赞，点踩等等
+        in: body
+        name: action
+        required: true
+        schema:
+          type: string
+      - description: 访问时间
+        in: body
+        name: visite_date
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: 文件或者网页的访问统计
+      x-creator: wangdanfeng
+swagger: "2.0"
