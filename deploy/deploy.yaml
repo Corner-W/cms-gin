@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cms-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: cms-server
+  template:
+    metadata:
+      labels:
+        name: cms-server
+    spec:
+      imagePullSecrets:
+      - name: myregistrykey
+      initContainers:
+        - command:
+            - sh
+            - '-c'
+            - "echo 'options use-vc' >> /etc/resolv.conf && echo 10000 > /proc/sys/net/core/somaxconn && echo 'options single-request-reopen' >> /etc/resolv.conf"
+          image: busybox
+          name: init
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+      containers:
+        - name: cms-server
+          image: $(ImageName)
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c" ,"/app/cms" ]
+          env:
+            - name: PROFILE 
+              value: "xxx"  
+          resources:
+            requests:
+              memory: "2048Mi"
+            limits:
+              memory: "2048Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cms-server
+spec:
+  selector:
+    name: cms-server
+  ports:
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
