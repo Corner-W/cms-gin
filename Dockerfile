@@ -1,21 +1,35 @@
-# 使用alpine这个轻量级镜像为基础镜像--运行阶段
-FROM alpine:3.17.2
+
+# Building stage
+FROM golang:1.13.5-alpine3.10 AS builder
+
+WORKDIR /build
+RUN adduser -u 10001 -D app-runner
+
+ENV GOPROXY https://goproxy.cn
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
+COPY . .
+RUN  GOOS=linux go build .
+
+
+FROM alpine:3.10 AS final
 # 全局工作目录
-WORKDIR /workdir
+WORKDIR /app
 # 复制编译阶段编译出来的运行文件到目标目录
-COPY server .
+COPY --from=builder /build/cms /app/
+COPY --from=builder /build/config.yaml /app/config.yaml
+COPY --from=builder /etc/passwd /etc/passwd
+
 # 将时区设置为东八区
-#RUN echo "https://mirrors.aliyun.com/alpine/v3.8/main/" > /etc/apk/repositories \
-#    && echo "https://mirrors.aliyun.com/alpine/v3.8/community/" >> /etc/apk/repositories \
-#    && apk add --no-cache tzdata \
-#    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime  \
-#    && echo Asia/Shanghai > /etc/timezone \
-#    && apk del tzdata
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime  \
+    && echo Asia/Shanghai > /etc/timezone \
+    && apk del tzdata
+
+
 # 需暴露的端口
-EXPOSE 8889
-# 可外挂的目录
-#VOLUME ["/go/kingProject/config","/go/kingProject/log"]
-RUN pwd && echo "ls==" && ls
+EXPOSE 8080
 
-
-ENTRYPOINT ["/workdir/server"]
+USER app-runner
+ENTRYPOINT ["/app/cms"]
